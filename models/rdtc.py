@@ -168,9 +168,10 @@ class RDTC(nn.Module):
         # Prepare dimensions
         n_iter = len(classifications)
         iter_labels = labels.repeat(n_iter)
-        bin_attribute_logits = bin_attribute_logits.repeat(n_iter, 1)
         classifications = torch.cat(classifications, dim=0)
         attribute_idx = torch.cat(attribute_idx, dim=0)
+        if bin_attribute_logits is not None:
+            bin_attribute_logits = bin_attribute_logits.repeat(n_iter, 1)
 
         # RDT loss
         loss = (1. - self.attribute_coef) * self.cls_loss(classifications, iter_labels)

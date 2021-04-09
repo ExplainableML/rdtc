@@ -129,8 +129,10 @@ class Trainer:
         stats['correct_1_mean'] = stats['correct_1'].sum(axis=1) / total
         stats['correct_5_mean'] = stats['correct_5'].sum(axis=1) / total
         stats['total_loss_mean'] = stats['total_loss'] / total
-        stats['correct_1_mean_cls'] = (stats['correct_1'] / total_cnt).mean(axis=1)
-        stats['correct_5_mean_cls'] = (stats['correct_5'] / total_cnt).mean(axis=1)
+        nonzeros = total_cnt.nonzero()[1]
+        total_cnt = total_cnt[:, nonzeros]
+        stats['correct_1_mean_cls'] = (stats['correct_1'][:, nonzeros] / total_cnt).mean(axis=1)
+        stats['correct_5_mean_cls'] = (stats['correct_5'][:, nonzeros] / total_cnt).mean(axis=1)
 
         stats['unique_attr'] = self.model.get_unique_attributes()
         stats['pruning_ratio'] = self.model.get_pruning_ratio(total)
@@ -140,16 +142,25 @@ class Trainer:
             stats['attr_acc'] = None
 
     def print_test_stats(self, stats, column_size=10):
-        row_format = f'{{:>{column_size}}}' * 5
-        columns = (range(1, len(stats['correct_1_mean_cls'])+1),
+        disp_attr = stats['attr_acc'] is not None
+        row_format = f'{{:>{column_size}}}' * (4 + int(disp_attr))
+        column_names = ['Depth', 'Accuracy', 'UniqAttr', 'Pruned']
+        columns = [range(1, len(stats['correct_1_mean_cls'])+1),
                    stats['correct_1_mean_cls'],
-                   stats['attr_acc'],
                    stats['unique_attr'],
-                   stats['pruning_ratio'])
-        print(row_format.format('Depth', 'Accuracy', 'AttrAcc', 'UniqAttr', 'Pruned'))
-        for d, acc, attr, uniq, pruned in zip(*columns):
-            print(row_format.format(d, np.around(acc, 5), np.around(attr, 5),
-                                    uniq, np.around(pruned, 5)))
+                   stats['pruning_ratio']]
+        if disp_attr:
+            column_names.insert(2, 'AttrAcc')
+            columns.insert(2, stats['attr_acc'])
+
+        print(row_format.format(*column_names))
+        #for d, acc, attr, uniq, pruned in zip(*columns):
+        for row in zip(*columns):
+            row = [np.around(c, 5) if isinstance(c, float) else c for c in row]
+
+            print(row_format.format(*row))
+            #print(row_format.format(d, np.around(acc, 5), np.around(attr, 5),
+            #                        uniq, np.around(pruned, 5)))
 
     def save_model(self, name):
         torch.save(self.model.state_dict(),
