@@ -1,5 +1,5 @@
 # Learning Decision Trees Recurrently Through Communication
-This is the official PyTorch code for our CVPR 2021 paper on Learning Decision Trees Recurrently Through Communication. It allows training and testing of our RDTC and aRDTC models on [Animals with Attributes 2 (AWA2)](https://cvml.ist.ac.at/AwA2/) [1] and [CUB-200-2011](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html) [2] datasets.
+This is the official PyTorch code for our CVPR 2021 paper on [Learning Decision Trees Recurrently Through Communication](https://arxiv.org/abs/1902.01780). It allows training and testing of our RDTC and aRDTC models on [Animals with Attributes 2 (AWA2)](https://cvml.ist.ac.at/AwA2/) [1] and [CUB-200-2011](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html) [2] datasets.
 
 ![RDTC Teaser](./assets/RDTC_teaser.svg)
 
